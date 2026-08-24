@@ -460,3 +460,7 @@ kubectl get events --sort-by=.metadata.creationTimestamp
 - 能解释性能瓶颈在显存、KV cache、batch、模型大小还是请求模式。
 - 能做一个带引用和评估集的 Runbook RAG。
 - 能做一个只读 SRE Agent，并明确工具权限、审计和人工确认边界。
+
+## 进阶
+
+过关后继续：[第七阶段学习资料-AIInfra深水区.md](第七阶段学习资料-AIInfra深水区.md)——容量拐点、chunked prefill、抢占、量化两面性、NCCL 验收、GPU 故障演练、DRA/Kueue 共 9 组实验；理论配套 ai-ops-learning 仓库的 `llm-inference-internals.md` 和 `gpu-cluster-ops.md`。

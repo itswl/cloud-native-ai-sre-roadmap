@@ -12,6 +12,7 @@
 - [第五阶段：Service Mesh](第五阶段学习资料-ServiceMesh.md)
 - [第六阶段：云原生安全与身份](第六阶段学习资料-云原生安全与身份.md)
 - [第七阶段：AI Infra](第七阶段学习资料-AIInfra.md)
+- [第七阶段（进阶）：AI Infra 深水区实验](第七阶段学习资料-AIInfra深水区.md)
 - [第八阶段：AIOps 与 AI SRE](第八阶段学习资料-AIOps与AISRE.md)
 
 ## 主线
