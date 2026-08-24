@@ -14,6 +14,7 @@
 - [第七阶段：AI Infra](第七阶段学习资料-AIInfra.md)
 - [第七阶段（进阶）：AI Infra 深水区实验](第七阶段学习资料-AIInfra深水区.md)
 - [第八阶段：AIOps 与 AI SRE](第八阶段学习资料-AIOps与AISRE.md)
+- [第八阶段（进阶）：AIOps / AI SRE 深水区](第八阶段学习资料-AIOpsAISRE深水区.md)
 
 ## 主线
 
