@@ -1,7 +1,7 @@
 # 第二阶段学习资料：Kubernetes 深水区
 
 生成日期：2026-05-08  
-对应路线文档：[工作路线完善版.md](</Users/imwl/Documents/New project/工作路线完善版.md>)
+对应路线文档：[工作路线完善版.md](工作路线完善版.md)
 
 ## 目标
 
@@ -31,7 +31,7 @@
 - kubectx / kubens 可选。
 - stern 或 kail 可选，用于多 Pod 日志。
 - crictl 可选，用于节点容器运行时观察。
-- Go 1.22+，用于 Operator 实验。
+- Go 1.24+，用于 Operator 实验（以 Kubebuilder 当前版本的要求为准）。
 - Kubebuilder，用于 CRD / Controller 实验。
 
 创建一个多节点 kind 集群：
@@ -189,9 +189,9 @@ apiserver 是 Kubernetes API 的前门。etcd 是 Kubernetes 的一致性键值�
 - [Kubernetes Components](https://kubernetes.io/docs/concepts/overview/components/)
 - [Kubernetes API Concepts: Resource versions and watches](https://kubernetes.io/docs/reference/using-api/api-concepts/)
 - [Operating etcd clusters for Kubernetes](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/)
-- [etcd Maintenance](https://etcd.io/docs/v3.5/op-guide/maintenance/)
-- [etcd Disaster Recovery](https://etcd.io/docs/v3.7/op-guide/recovery/)
-- [etcd Failure Modes](https://etcd.io/docs/v3.5/op-guide/failures/)
+- [etcd Maintenance](https://etcd.io/docs/v3.6/op-guide/maintenance/)
+- [etcd Disaster Recovery](https://etcd.io/docs/v3.6/op-guide/recovery/)
+- [etcd Failure Modes](https://etcd.io/docs/v3.6/op-guide/failures/)
 
 ### 实验二：观察控制面组件
 
@@ -938,12 +938,21 @@ kubectl top nodes
 kubectl top pods
 ```
 
-创建一个 HPA：
+创建一个 HPA（注意：`kubectl create deployment` 没有 `--requests` 参数，requests 要单独用 `kubectl set resources` 设置）：
 
 ```bash
-kubectl create deployment hpa-demo --image=registry.k8s.io/hpa-example --requests=cpu=200m --replicas=1
+kubectl create deployment hpa-demo --image=registry.k8s.io/hpa-example --replicas=1
+kubectl set resources deployment hpa-demo --requests=cpu=200m
+kubectl expose deployment hpa-demo --port=80
 kubectl autoscale deployment hpa-demo --cpu-percent=50 --min=1 --max=5
 kubectl get hpa hpa-demo -w
+```
+
+另开一个终端制造负载，才能看到扩容：
+
+```bash
+kubectl run load-gen --rm -it --image=busybox:1.36 --restart=Never -- \
+  /bin/sh -c "while sleep 0.01; do wget -q -O- http://hpa-demo; done"
 ```
 
 你要回答：
@@ -958,6 +967,7 @@ kubectl get hpa hpa-demo -w
 ```bash
 kubectl delete hpa hpa-demo
 kubectl delete deployment hpa-demo
+kubectl delete service hpa-demo
 ```
 
 ## 第 8 周：CRD、Operator 与 Kubebuilder
@@ -989,8 +999,8 @@ CRD 和 Operator 是 Kubernetes 平台扩展的核心。你要理解：
 - [Kubernetes Operator Pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
 - [Extend the Kubernetes API with CustomResourceDefinitions](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
 - [Kubebuilder Book: Getting Started](https://book.kubebuilder.io/getting-started)
-- [Kubebuilder Book: What is in a controller?](https://book-v3.book.kubebuilder.io/cronjob-tutorial/controller-overview)
-- [Kubebuilder Book: Using Finalizers](https://book.kubebuilder.io/reference/using-finalizers.html)
+- [Kubebuilder Book: What's in a controller?](https://book.kubebuilder.io/cronjob-tutorial/controller-overview)
+- [Kubebuilder Book: Using Finalizers](https://book.kubebuilder.io/reference/using-finalizers)
 - [Operator SDK Go Operator Tutorial](https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/)
 
 ### 实验十六：创建一个最小 Operator

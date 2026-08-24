@@ -1,7 +1,7 @@
 # 第七阶段学习资料：AI Infra
 
 生成日期：2026-05-08  
-对应路线文档：[工作路线完善版.md](</Users/imwl/Documents/New project/工作路线完善版.md>)
+对应路线文档：[工作路线完善版.md](工作路线完善版.md)
 
 ## 目标
 
@@ -70,10 +70,10 @@ LLM 服务性能由很多因素决定：
 
 ### 实验一：推理指标拆解
 
-选择一个小模型，用 vLLM 启动服务：
+选择一个小模型，用 vLLM 启动服务（Qwen3-0.6B 或 Qwen2.5-0.5B-Instruct 都可以，前者更新）：
 
 ```bash
-vllm serve Qwen/Qwen2.5-0.5B-Instruct
+vllm serve Qwen/Qwen3-0.6B
 ```
 
 请求：
@@ -82,7 +82,7 @@ vllm serve Qwen/Qwen2.5-0.5B-Instruct
 curl http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "model": "Qwen/Qwen3-0.6B",
     "messages": [{"role":"user","content":"用一句话解释 Kubernetes controller"}],
     "stream": true
   }'
@@ -330,7 +330,7 @@ Agent 的核心不是“会自动想”，而是安全地使用工具完成任�
 - [OpenAI Agents SDK Tracing](https://openai.github.io/openai-agents-python/tracing/)
 - [LangGraph Overview](https://docs.langchain.com/oss/python/langgraph)
 - [LangGraph Persistence](https://docs.langchain.com/oss/python/langgraph/persistence)
-- [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2024-11-05/index)
+- [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 
 ### 实验六：只读 SRE Agent
 

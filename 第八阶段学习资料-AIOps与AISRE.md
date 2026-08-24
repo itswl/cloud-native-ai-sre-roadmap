@@ -1,7 +1,7 @@
 # 第八阶段学习资料：AIOps 与 AI SRE
 
 生成日期：2026-05-08  
-对应路线文档：[工作路线完善版.md](</Users/imwl/Documents/New project/工作路线完善版.md>)
+对应路线文档：[工作路线完善版.md](工作路线完善版.md)
 
 ## 目标
 
@@ -94,7 +94,7 @@ AI 不应直接替代：
 
 ### 必读资料
 
-- [Google SRE：Incident Response](https://sre.google/sre-book/incident-response/)
+- [Google SRE Workbook：Incident Response](https://sre.google/workbook/incident-response/)
 - [Google SRE：Managing Incidents](https://sre.google/sre-book/managing-incidents/)
 - [Google SRE：Postmortem Culture](https://sre.google/sre-book/postmortem-culture/)
 - [PagerDuty Incident Response](https://response.pagerduty.com/)

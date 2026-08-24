@@ -1,7 +1,7 @@
 # 第五阶段学习资料：Service Mesh
 
 生成日期：2026-05-08  
-对应路线文档：[工作路线完善版.md](</Users/imwl/Documents/New project/工作路线完善版.md>)
+对应路线文档：[工作路线完善版.md](工作路线完善版.md)
 
 ## 目标
 
@@ -164,13 +164,15 @@ ztunnel 不解析 HTTP header。需要 L7 能力时才引入 waypoint。
 kubectl create namespace mesh-demo
 kubectl label namespace mesh-demo istio.io/dataplane-mode=ambient
 kubectl -n mesh-demo apply -f samples/httpbin/httpbin.yaml
-kubectl -n mesh-demo apply -f samples/sleep/sleep.yaml
+kubectl -n mesh-demo apply -f samples/curl/curl.yaml
 ```
+
+注意：Istio 1.23 起官方示例 `sleep` 已更名为 `curl`（`samples/curl/curl.yaml`），老教程里的 `samples/sleep/sleep.yaml` 在新版本发行包里已不存在。
 
 测试：
 
 ```bash
-kubectl -n mesh-demo exec deploy/sleep -- curl -sS http://httpbin:8000/get
+kubectl -n mesh-demo exec deploy/curl -- curl -sS http://httpbin:8000/get
 istioctl ztunnel-config workloads
 ```
 
@@ -201,12 +203,12 @@ Ambient 中 L4 策略可由 ztunnel 执行，L7 策略需要 waypoint。
 - [Istio PeerAuthentication](https://istio.io/latest/docs/reference/config/security/peer_authentication/)
 - [Istio Ambient L4 Policy](https://istio.io/latest/docs/ambient/usage/l4-policy/)
 
-### 实验四：只允许 sleep 访问 httpbin
+### 实验四：只允许 curl 访问 httpbin
 
 目标：
 
 - 默认拒绝。
-- 只允许 `sleep` workload 调用 `httpbin`。
+- 只允许 `curl` workload 调用 `httpbin`。
 - 验证非授权 Pod 被拒绝。
 
 你要回答：
@@ -241,7 +243,7 @@ Ambient 中 L4 策略可由 ztunnel 执行，L7 策略需要 waypoint。
 - [Istio Request Timeouts](https://istio.io/latest/docs/tasks/traffic-management/request-timeouts/)
 - [Istio Circuit Breaking](https://istio.io/latest/docs/tasks/traffic-management/circuit-breaking/)
 - [Istio Fault Injection](https://istio.io/latest/docs/tasks/traffic-management/fault-injection/)
-- [Gateway API HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/)
+- [Gateway API HTTP Routing Guide](https://gateway-api.sigs.k8s.io/guides/http-routing/)
 
 ### 实验五：timeout 与 fault injection
 
@@ -275,10 +277,10 @@ Ambient 中 L7 路由通常使用 Gateway API 表达。
 
 ### 必读资料
 
-- [Gateway API Overview](https://gateway-api.sigs.k8s.io/concepts/api-overview/)
-- [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway/)
-- [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/)
-- [ReferenceGrant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/)
+- [Gateway API Overview](https://gateway-api.sigs.k8s.io/docs/concepts/api-overview/)
+- [Gateway API Spec Reference（Gateway / HTTPRoute / ReferenceGrant）](https://gateway-api.sigs.k8s.io/reference/api-spec/)
+- [HTTP Routing Guide](https://gateway-api.sigs.k8s.io/guides/http-routing/)
+- [Traffic Splitting Guide](https://gateway-api.sigs.k8s.io/guides/traffic-splitting/)
 
 ### 实验六：双版本分流
 

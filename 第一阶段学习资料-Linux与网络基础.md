@@ -1,7 +1,7 @@
 # 第一阶段学习资料：Linux 与网络基础
 
 生成日期：2026-05-08  
-对应路线文档：[工作路线完善版.md](</Users/imwl/Documents/New project/工作路线完善版.md>)
+对应路线文档：[工作路线完善版.md](工作路线完善版.md)
 
 ## 目标
 
@@ -138,8 +138,10 @@ lsof -p $pid | head
 ### 实验二：用 strace 看系统调用
 
 ```bash
-strace -p $pid -f -tt -T
+sudo strace -p $pid -f -tt -T
 ```
+
+注意：Ubuntu 默认开启 Yama 的 `kernel.yama.ptrace_scope=1`，非 root 用户不能 attach 到非子进程，所以 `strace -p` 需要 sudo（或临时 `sysctl kernel.yama.ptrace_scope=0`）。
 
 然后再次请求：
 
@@ -292,8 +294,10 @@ PY
 ```bash
 journalctl -u demo-memory
 systemctl status demo-memory
-dmesg -T | tail -50
+sudo dmesg -T | tail -50
 ```
+
+注意：Ubuntu 默认 `kernel.dmesg_restrict=1`，普通用户读 dmesg 需要 sudo。
 
 你要回答：
 
@@ -527,6 +531,8 @@ kubectl get endpoints web
 kubectl get endpointslice -l kubernetes.io/service-name=web
 kubectl get pods -o wide
 ```
+
+注意：Endpoints API 自 Kubernetes v1.33 起已标记弃用，新排障习惯应以 EndpointSlice 为准，`kubectl get endpoints` 仅作对照。
 
 制造故障一：让 Service selector 不匹配。
 
