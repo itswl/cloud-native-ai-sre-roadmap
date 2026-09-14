@@ -155,6 +155,17 @@ RAG 那套评估思想直接搬过来，但要拆成两段——因为 Meta/微�
 - [Meta AI-Assisted RCA（ZenML 案例拆解）](https://www.zenml.io/llmops-database/ai-assisted-root-cause-analysis-system-for-incident-response)
 - RAG 评估迁移思路见 ai-ops-learning 仓库 `rag-implementation-guide.md` 的 RAGAS/DeepEval 章节
 
+**一手生产数据（作者博客）**
+
+- [我的告警系统把 90% 的告警判成 high，独立调查器只认同 26%](https://blog.wetalk.eu.org/ops/services/severity-calibration/)——用独立评判器校准 LLM 分级，并公开分歧率。这就是本周"分开评检索和判断"在生产里的样子：评判器和被评系统必须独立，否则一致率没有意义。
+- [让两个告警系统在真实流量上对赌：影子灰度跑出的第一批数据](https://blog.wetalk.eu.org/ops/services/shadow-run-two-alert-systems/)——影子模式的完整实施记录，含第一批对比数据怎么读。
+- [决策档案里最值钱的是 rejected 桶](https://blog.wetalk.eu.org/ops/rejected-notes-bucket/)——评估集里负样本（被否决的决策）为什么比正样本更值钱。
+
+**延伸阅读（公众号文章，须带批判性读）**
+
+- 《当 AI 做根因分析时，它在"胡说八道"什么？——从 Datadog Bits AI 的假设-验证方法论谈起》（公众号 SRETALK）——把 RCA 建模为"假设生成 → 逐条验证"而非一次性结论，是评估工程该采用的框架。Datadog 能力清单逐项核对属实，仅视图名称与官方不一致（官方为 Investigation Steps / Hypothesis Tree）。
+- 《AIOps 实战：小红书和腾讯教你如何做根因分析》（公众号 CIT云原生）——两家的 RCA 方案对比有参考价值。注意：文中"定位准确率 80%+"实为 Top-5 命中率，不是点中率；RCSF 是学术文献方法而非小红书自研。
+
 ### 实验二：建 20 个样本的评估集 + 一版评估脚本
 
 ```
@@ -224,6 +235,15 @@ LLM 层（RCA Agent）
 
 - [Prometheus Alertmanager：Grouping / Inhibition](https://prometheus.io/docs/alerting/latest/alertmanager/)
 - [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/concepts/semantic-conventions/)（拓扑关联依赖统一的 service/dependency 语义）
+
+**一手生产数据（作者博客）**
+
+- [WebhookWise：我给告警群做了一个「守门人」](https://blog.wetalk.eu.org/ops/services/webhookwise-gatekeeper/)——在告警到达人之前加一层判断，本周"LLM 只在事件级触发、不在告警级触发"的设计在生产里怎么落。
+
+**延伸阅读（公众号文章，须带批判性读）**
+
+- 《每天上万条误报警，AI 如何让告警准确率提升 90%？》（公众号 篮球星探）——动态阈值 + 工作日/周末分基线的思路可以参考。但成果表的数字互相拼不出一致口径（「误报率 72%→9%」与同篇「15000 条里只有 400 条要处理」算不通，据此优化前应是 97%），标题的"90%"在正文里没有落点，示例数据的 5 天里含元旦和周末却被当成同质工作日基线——**正好反驳了它自己的核心论点**。当练习读。
+- 《小团队零成本自建监控体系，告警从 200 条/天降到 5 条》（公众号 耕云躬行录）——架构判断和 PromQL 扎实，但**配置照抄会真出事**。建议作为本周的反向练习：不看答案，先找出文中这三处——(1) 一条 Alertmanager 抑制规则会在任意节点宕机时静默全集群的 Pod 告警；(2) 一段 Alloy 采集配置照抄即启动失败；(3) 一份 PrometheusRule 会被 Operator 一条都不加载。找齐了，本周"抑制规则是告警体系的灵魂"这句话就真懂了。答案见路线仓库的《AI 技术内容可信度判别指南》第 8 类。
 
 ### 实验三：写一个关联引擎（不带 LLM）
 
@@ -374,6 +394,16 @@ audit: [triggering_incident, evidence_snapshot, decision_confidence, approver, r
 - [Google SRE：Emergency Response / Managing Incidents](https://sre.google/sre-book/managing-incidents/)
 - [OpenAI Agents SDK：Guardrails](https://openai.github.io/openai-agents-python/guardrails/)（输入输出护栏思想，但记住：guardrail 是补充，权限才是地基）
 
+**一手生产数据（作者博客）**
+
+- [只读是构造出来的，不是许诺出来的：让 AI Agent 碰生产的安全设计](https://blog.wetalk.eu.org/ops/services/read-only-by-construction/)——四层构造式只读（tool-call veto hook、只读 MCP 面、不可信输入围栏、双闸门修复），**每一层都假设上一层已经被骗过**。这是本周"安全边界必须是机制不是 prompt"的完整实现。
+- [让 Agent 自己长经验，又不让它改自己的指令](https://blog.wetalk.eu.org/ops/services/agent-instruction-boundary/)——经验层与指令层的写权限分离，防止自我改进演变成自我越权。
+
+**延伸阅读（公众号文章，须带批判性读）**
+
+- 《别让 AI 直接碰生产：AI 落地运维的五阶段与三档授权》（公众号 叶哥知远）——按权限一格一格放开（SRE Assistant → Copilot → Workflow → Agent → 写权限）的分级框架站得住，可作团队定级的参照。**但两处会误导权限设计**：文中"MCP Server / MCP Tool 全部只读"——MCP 协议层没有任何只读的强制机制，规范里的 `readOnlyHint` 明确只是提示，只读只能由服务端实现和它持有的凭据保证；"低风险 → 自动执行所有查询类操作"忽略了读操作的爆炸半径（读到 secret、大查询打爆 querier、SaaS 按扫描量计费）。
+- 反例练习：《我写了个服务器巡检 Skill，从一个小时压到 6 分钟》（公众号 码农庄园的运维师）——文中写"巡检全程只读，数据库仅执行 SELECT，安全放心"，请在同一篇里找出与之矛盾的那张表和上游工具的实际能力。这是《判别指南》第 9 类"把有写能力的工具描述成只读"的标准样本，也是本周责任模型要防的那种事。
+
 ### 实验五：设计并实现一个 L1 修复动作
 
 ```
@@ -429,6 +459,14 @@ Prompt/workflow 版本管理：像管代码一样，改动走评估集回归后�
 
 - [Datadog：Bits AI SRE 发布](https://investors.datadoghq.com/news-releases/news-release-details/datadog-launches-bits-ai-sre-agent-resolve-incidents-faster)
 - [Google SRE：Postmortem Culture](https://sre.google/sre-book/postmortem-culture/)（反馈闭环的文化基础）
+
+**一手生产数据（作者博客）**
+
+- [「已发送」标记撒了几周的谎：一次静默数据丢失的解剖](https://blog.wetalk.eu.org/ops/sent-marker-that-lied/)——AI 运维系统自己的静默失败复盘：状态标记与实际投递脱钩，几周后才发现。上生产前值得对照着问一遍：我的系统里哪些"成功"标记是自报的，哪些是被独立确认的。
+
+**延伸阅读（公众号文章）**
+
+- 《全网都在问：为什么很多企业做了 AIOps，最后却只得到一个"高级监控平台"？》（公众号 程序员喵手）——为什么落地会退化成"监控 2.0"的组织与治理视角，与本周"自建还是买"的判断互补。这篇难得地干净：通篇没有引用任何机构、报告或百分比，两处虚构场景都明确标了"假设"。唯一要注意的是它自己提出的五条度量指标里有三条分母不可测——写实验六的决策备忘录时，先把指标的可测性过一遍。
 
 ### 实验六：写一份《AI SRE 上生产决策备忘录》
 

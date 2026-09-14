@@ -68,6 +68,11 @@ LLM 服务性能由很多因素决定：
 - [vLLM Documentation](https://docs.vllm.ai/en/stable/)
 - [OpenAI Text Generation](https://platform.openai.com/docs/guides/text-generation)
 
+**延伸阅读（公众号文章，须带着[判别指南](AI技术内容可信度判别指南.md)读）**
+
+- 「大模型简史」第 14 篇《部署：量化、KV Cache 与高性能推理服务》（公众号 ThinkingAgent）——两阶段模型、roofline、服务指标、PagedAttention 的讲解结构最完整，适合建立全景。**但这是该系列机理错误最密集的一篇（4 处严重）**，读到以下四处请以 ai-ops-learning 仓库 `llm-inference-internals.md` 为准：batch decode 摊薄的是权重读取而非 KV Cache 读取；decode 算术强度是 O(1) 而非 1/t；AWQ 不保留高精度通道（它恰恰是为了避免混合精度）；chunked prefill 是 prefill/decode 融合，与 PD 分离是相反路线。它的 7 条 arXiv 引用倒是全对。
+- 「大模型简史」第 3 篇《架构：Transformer 如何计算上下文关系》（同上）——该系列最干净的一篇，15 条参考文献全部核对通过，√d_k 缩放的方差论证、FFN 参数占比、Post-LN 需要 Warmup 的方向全对。补注意力机制基础用这篇。
+
 ### 实验一：推理指标拆解
 
 选择一个小模型，用 vLLM 启动服务（Qwen3-0.6B 或 Qwen2.5-0.5B-Instruct 都可以，前者更新）：
@@ -153,6 +158,11 @@ kubectl get pods -A -o wide | grep <gpu-node>
 - [SGLang Documentation](https://docs.sglang.ai/)
 - [SGLang 项目站点](https://www.sglang.io/)
 - [NVIDIA TensorRT-LLM](https://docs.nvidia.com/tensorrt-llm/)
+
+**延伸阅读（公众号文章）**
+
+- 「AI Infra 落地实战」第 2 篇《L1 模型与推理层：模型网关、路由与推理引擎》（公众号 ThinkingAgent）——网关 / 路由 / 引擎的分层视角值得看。注意一处会误导采购的错误：文中"70B INT4 只要 35GB，一张 RTX 4090（24GB）就能跑"是同句自相矛盾，70B INT4 单卡至少需要 40GB 级显存。
+- 「AI Infra 落地实战」第 2 篇《模型与推理》（公众号 东哥科技观，原名技术之积累）——LiteLLM 网关配置与模型 ID 实测可用。注意其 KV Cache 表按无 GQA 的 MHA 架构计算，对 Llama-3-70B 这类 GQA 模型高估 6–8 倍。
 
 ### 实验三：对比两个 serving 引擎
 
@@ -330,6 +340,12 @@ Agent 的核心不是“会自动想”，而是安全地使用工具完成任�
 - [OpenAI Agents SDK Tracing](https://openai.github.io/openai-agents-python/tracing/)
 - [LangGraph Overview](https://docs.langchain.com/oss/python/langgraph)
 - [LangGraph Persistence](https://docs.langchain.com/oss/python/langgraph/persistence)
+
+**延伸阅读（公众号文章）**
+
+- 「大模型简史」第 12 篇《行动：Tool Use、MCP 与 Agent Runtime》（公众号 ThinkingAgent）——MCP 协议事实全部核对无误（JSON-RPC over stdio/HTTP、tools/resources/prompts 三原语、OAuth 授权），Function Calling 演进时间线正确。可作 MCP 入门读物。参考文献里 LLM Agent 综述的 arXiv 编号错置（应为 2309.07864）。
+- 「AI Infra 落地实战」第 5 篇《L4 编排层：Agent Framework 深度对比》（公众号 ThinkingAgent）——框架横评的维度设计好。注意 MAST 多智能体失败分类法只有三大类（规约 / 失配 / 验证，合计 100%），文中"16% 是基础设施问题"不存在；CrewAI Flows 默认持久化是 SQLite 而非 LanceDB。
+- Subagent 与 Multi-Agent 的区分、以及多代理系统的工程教训，见 ai-ops-learning 仓库 `ai-agent-ecosystem.md` 的 1.4 节。
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 
 ### 实验六：只读 SRE Agent
